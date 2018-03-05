@@ -1,0 +1,18 @@
+sudo: required 
+language: cpp
+services:
+  - docker
+env:
+  global:
+    secure: "GDKiBdUwEHIgaI8h4meib/OUY11PeARydooljsTQe9XnziSUKUJwxUl8O7RMpOpkLUeLPt6n4tbdFb9e6PavzE0qiwhBkjn51PaVbYAtWrJd8XhgAFjDhuZFh/RvjT4GZlEQzAvz4jyCPLN8WzX3DAFseE4+cRJl8YYzUdOCkV8C41hbAtPA0yQOMO4xCEHIAF1dzNIGoWZ2v9zOoyqTi9kWiOUCWBloYlJTlpxCwOTPziBpJLjjknUCkHjrZUrwForojk62BvjL/s2MjmMlqj8lOM1OpcT4SjxbhhCLrZoJhqFw4BieTfltZNud+59o4lKX7dk94ab97sKgQGrwdiYkwqDf1Zy6UFhTEbg0s/HawS6pe4jY/avJKK7Vzi7bIx00xB8N7rCBUxDvEmHOiE6cf9CIZLptGk/jSNp/BsPuTEDOio3XFlCgrLrzQ/1HSAnwkCODmWjE25+5XsDHpJic1mlQuUNj/0qgzbWneK+g69/XRo8FtyzsiOeQcEvQWopKzFlD1JzPir0m+388WGlUbytr3JdZWn0cQakSlhvsgg/cAPyVMsiEv6FEPcBmDt5AOIsQSlB5VcWuYDMJblkjCy6DNbE3w9ncn7mKlKJ5GCRUMdgAqvfKKNi/Ru0uaLAOsnaQ5Lg5L0voky0jDdzQTjb/71nqWQ/lRNc3GOw=" #BINTRAY_KEY
+
+before_install:
+  - mkdir $(pwd)/build
+  - docker pull spielhuus/toolchain:latest
+script:
+  - sudo docker run -itd -v $(pwd)/repo:/repo --name conan_build spielhuus/toolchain /bin/bash 
+  - sudo docker exec conan_build /bin/bash -c "git clone https://github.com/spielhuus/conan-libev.git /repo"
+  - sudo docker exec conan_build /bin/bash -c "conan user -p $BINTRAY_KEY -r conan-cpp squawkcpp"
+  - sudo docker exec conan_build /bin/bash -c "cd /repo && conan export . conan-cpp/latest && conan install Libev/4.24@conan-cpp/latest --build=Libev && conan upload Libev/4.24@conan-cpp/latest --all -r=conan-cpp"
+  - sudo docker rm -f conan_build
+
