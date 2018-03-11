@@ -20,6 +20,10 @@ If you handle multiple dependencies in your project is better to add a *conanfil
     [requires]
     libev/4.24@conan-cpp/latest
 
+    [options]
+    libev:shared: [True, False],
+    libev:disable_threads: [True, False]
+
     [generators]
     txt
 
