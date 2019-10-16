@@ -4,7 +4,7 @@
 
 ### Basic setup
 
-    $ conan install libev/4.27@conan-cpp/latest
+    $ conan install libev/4.27@local/stable
 
 ### Project setup
 
