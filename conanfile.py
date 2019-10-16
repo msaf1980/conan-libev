@@ -25,7 +25,7 @@ class LibevConan(ConanFile):
         tarball_name = self.FOLDER_NAME + '.tar.gz'
         download("http://dist.schmorp.de/libev/libev-%s.tar.gz" % (self.version),
                  tarball_name)
-        check_sha1(tarball_name, "436dd8eff00a45f8805b8cacfe4dd3bd993caedb")
+        check_sha1(tarball_name, "b67aff18f6f1ffec4422e188c98d9fe458c5ed0b")
         untargz(tarball_name)
         os.unlink(tarball_name)
 
