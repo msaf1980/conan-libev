@@ -1,4 +1,4 @@
-from conans import ConanFile, tools
+from conans import ConanFile, AutoToolsBuildEnvironment, tools
 from conans.tools import download, untargz, check_sha1
 import os
 #import shutil
@@ -17,28 +17,25 @@ class LibevConan(ConanFile):
                "disable_threads": [True, False]}
     default_options = "shared=False", "disable_threads=False"
 
-    def run_bash(self, cmd):
-        if self.settings.os == "Windows":
-            tools.run_in_windows_bash(self, cmd)
-        else:
-            self.run(cmd)
-
     def source(self):
         print("git clone %s -b %s" % (self.url, self.branch))
         self.run("git clone %s -b %s" % (self.url, self.branch))
         self.run("cd %s && git reset --hard %s" % (self.name, self.scn))
 
     def build(self):
-        with tools.chdir(self.name) :
+        build_env = AutoToolsBuildEnvironment(self)
+        with tools.environment_append(build_env.vars) and tools.chdir(self.name):
             configure_cmd = "chmod +x autogen.sh ; ./autogen.sh && ./configure "
             if not self.options.shared:
-                configure_cmd += " --disable-shared "
+                configure_cmd += " --disable-shared"
             if self.options.disable_threads:
-                configure_cmd += "--disable-thread-support "
-            if self.settings.os=="Windows":
+                configure_cmd += " --disable-thread-support"
+            if self.settings.os == "Windows":
                 configure_cmd += " --toolchain=msvc"
-            self.run_bash(configure_cmd)
-            self.run_bash("make")
+            if self.settings.build_type == 'Debug':
+                configure_cmd += " CFLAGS='-g -O0'"
+            self.run(configure_cmd)
+            self.run("make")
 
     def package(self):
         self.copy("ev.h", dst="include", src=self.libname)
