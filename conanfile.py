@@ -5,10 +5,10 @@ import os
 
 class LibevConan(ConanFile):
     name = "libev"
-    version = "4.24"
+    version = "4.27"
     description = "A full-featured and high-performance (see benchmark) event loop that is loosely modelled after libevent, but without its limitations and bugs. It is used in GNU Virtual Private Ethernet, rxvt-unicode, auditd, the Deliantra MORPG Server and Client, and many other programs."
     url = "https://github.com/TigerZhang/conan-libev"
-    license = "http://cvs.schmorp.de/libev/LICENSE?revision=1.11&view=markup&pathrev=rel-4_22"
+    license = "http://cvs.schmorp.de/libev/LICENSE?revision=1.11&view=markup&pathrev=rel-4_27"
     FOLDER_NAME = 'libev-%s' % version
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False],
