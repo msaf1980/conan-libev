@@ -5,11 +5,13 @@ import os
 
 class LibevConan(ConanFile):
     name = "libev"
-    version = "4.27"
+    libname = "ev"
+    version = "4.43"
+    branch = "master"
+    scn = "069619bc7159803e664753cee7112089dd7cea7f"
     description = "A full-featured and high-performance (see benchmark) event loop that is loosely modelled after libevent, but without its limitations and bugs. It is used in GNU Virtual Private Ethernet, rxvt-unicode, auditd, the Deliantra MORPG Server and Client, and many other programs."
-    url = "https://github.com/TigerZhang/conan-libev"
+    url = "https://github.com/msaf1980/libev"
     license = "http://cvs.schmorp.de/libev/LICENSE?revision=1.11&view=markup&pathrev=rel-4_27"
-    FOLDER_NAME = 'libev-%s' % version
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False],
                "disable_threads": [True, False]}
@@ -22,28 +24,26 @@ class LibevConan(ConanFile):
             self.run(cmd)
 
     def source(self):
-        tarball_name = self.FOLDER_NAME + '.tar.gz'
-        download("http://dist.schmorp.de/libev/libev-%s.tar.gz" % (self.version),
-                 tarball_name)
-        check_sha1(tarball_name, "436dd8eff00a45f8805b8cacfe4dd3bd993caedb")
-        untargz(tarball_name)
-        os.unlink(tarball_name)
+        print("git clone %s -b %s" % (self.url, self.branch))
+        self.run("git clone %s -b %s" % (self.url, self.branch))
+        self.run("cd %s && git reset --hard %s" % (self.name, self.scn))
 
     def build(self):
-        with tools.chdir("libev-%s" % self.version) :
-            configure_cmd = "./configure "
+        with tools.chdir(self.name) :
+            configure_cmd = "chmod +x autogen.sh ; ./autogen.sh && ./configure "
             if not self.options.shared:
                 configure_cmd += " --disable-shared "
             if self.options.disable_threads:
                 configure_cmd += "--disable-thread-support "
             if self.settings.os=="Windows":
                 configure_cmd += " --toolchain=msvc"
+            print(configure_cmd)
             self.run_bash(configure_cmd)
             self.run_bash("make")
-        
+
     def package(self):
-        self.copy("ev.h", dst="include", src="%s" % (self.FOLDER_NAME))
-        self.copy("ev++.h", dst="include", src="%s" % (self.FOLDER_NAME))
+        self.copy("ev.h", dst="include", src=self.libname)
+        self.copy("ev++.h", dst="include", src=self.libname)
         if self.options.shared:
             if self.settings.os == "Macos":
                 self.copy(pattern="*.dylib", dst="lib", keep_path=False)

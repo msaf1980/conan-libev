@@ -4,14 +4,14 @@
 
 ### Basic setup
 
-    $ conan install libev/4.27@local/stable
+    $ conan install libev/4.43@local/stable
 
 ### Project setup
 
 If you handle multiple dependencies in your project is better to add a *conanfile.txt*
 
     [requires]
-    libev/4.27@local/latest
+    libev/4.43@local/latest
 
     [options]
     libev:shared: [True, False],
