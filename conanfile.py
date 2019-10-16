@@ -37,7 +37,6 @@ class LibevConan(ConanFile):
                 configure_cmd += "--disable-thread-support "
             if self.settings.os=="Windows":
                 configure_cmd += " --toolchain=msvc"
-            print(configure_cmd)
             self.run_bash(configure_cmd)
             self.run_bash("make")
 
